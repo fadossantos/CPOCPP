@@ -1,0 +1,36 @@
+<div class="navbar-default sidebar" role="navigation">
+				<div class="sidebar-nav navbar-collapse">
+					<ul class="nav" id="side-menu">
+						<div class="nav" sec:authorize="hasRole('ROLE_ADMIN')">
+						<li><a href="#"><i class="fa fa-edit fa-fw"></i>
+								Administracao<span class="fa arrow"></span></a>
+							<ul class="nav nav-second-level">
+								<li><a onclick="menuStatusOnClick()">Status</a></li>
+								<li><a onclick="menuAssuntoOnClick()">Assunto</a></li>
+							</ul> <!-- /.nav-second-level --></li>
+							
+						</div>
+						<div class="nav" sec:authorize="hasRole('ROLE_USER')">
+						<li><a href="#"><i class="fa fa-sitemap fa-fw"></i>
+								Processos CPO/CPP<span class="fa arrow"></span></a>
+							<ul class="nav nav-second-level">
+								<li><a onclick="menuNovoProcessoOnClick()">Novo Processo</a></li>
+								<li><a href="#">Consulta<span class="fa arrow"></span></a>
+									<ul class="nav nav-third-level">
+										<li><a href="#">Por Nome</a></li>
+										<li><a href="#">Por RE</a></li>
+										<li><a href="#">Por Numero SECCOM</a></li>
+										<li><a href="#">Por Status</a></li>
+									</ul> <!-- /.nav-third-level --></li>
+							</ul> <!-- /.nav-second-level --></li>
+							</div>
+						<li><a href="#"><i class="fa fa-edit fa-fw"></i>
+								Publico<span class="fa arrow"></span></a>
+							<ul class="nav nav-second-level">
+								<li><a onclick="menuEstadosOnClick()">Dado 1</a></li>
+								<li><a onclick="menuCidadesOnClick()">Dado 2</a></li>
+							</ul> <!-- /.nav-second-level --></li>					
+					</ul>
+				</div>
+				<!-- /.sidebar-collapse -->
+			</div>
