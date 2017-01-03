@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -24,13 +25,21 @@ public class ADAuthenticationManager implements AuthenticationProvider{
 	@Autowired
 	PermissoesRepository permissoesDAO;
 	
+	 @Value("${serverAD}")
+	 private String serverAD;
+
+	 @Value("${serverADName}")
+	 private String serverADName;
+	 
+	 
+	
 	@Override
 	public Authentication authenticate(Authentication auth) throws AuthenticationException {
 		String username = auth.getName();
         String password = auth.getCredentials().toString();
         AuxAD ldapContxCrtn = new AuxAD();
 	//	RetornoAD retornoAD = ldapContxCrtn.validaUsuarioAD("10.61.236.250", username, password, "cmdo.policiamilitar.sp.gov.br");
-		RetornoAD retornoAD = ldapContxCrtn.validaUsuarioAD("201.6.100.179", username, password, "tmsfasdom.com");
+		RetornoAD retornoAD = ldapContxCrtn.validaUsuarioAD(serverAD, username, password, serverADName);
 		
 		if(retornoAD.getMensagem() == AuxAD.SUCESSO)
 		{       
