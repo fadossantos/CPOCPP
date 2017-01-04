@@ -3,6 +3,7 @@ package br.gov.sp.policiamilitar.cpocpp.business.entities;
 import java.io.Serializable;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -20,16 +21,7 @@ public class Interessado implements Serializable{
 
 	private String nomeInteressado;
 
-	@ManyToMany
-	@JoinTable(
-		name="processoCPOCPP_interessado"
-		, joinColumns={
-			@JoinColumn(name="idSECCOM")
-			}
-		, inverseJoinColumns={
-			@JoinColumn(name="reInteressado")
-			}
-		)
+	@ManyToMany(mappedBy = "interessados", cascade=CascadeType.ALL)
 	private List<ProcessoCPOCPP> processosCPOCPP;
 
 	public Interessado() {

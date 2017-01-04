@@ -50,7 +50,7 @@ function menuStatusOnClick() {
 }
 
 function menuNovoProcessoOnClick() {
-	executaAjaxGet('/seedstarter', 'page-wrapper', '', previnePadrao());
+	executaAjaxGet('/processoCPOCPP', 'page-wrapper', '', previnePadrao());
 }
 
 

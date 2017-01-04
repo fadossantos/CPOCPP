@@ -23,42 +23,34 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import br.gov.sp.policiamilitar.cpocpp.business.entities.Interessado;
-import br.gov.sp.policiamilitar.cpocpp.business.entities.ProcessoCPOCPP;
-import br.gov.sp.policiamilitar.cpocpp.business.entities.repositories.ProcessoCPOCPPRepository;
+import br.gov.sp.policiamilitar.cpocpp.business.entities.Interessado;
+import br.gov.sp.policiamilitar.cpocpp.business.entities.repositories.InteressadoRepository;
 
 @Service
-public class ProcessoCPOCPPService {
+public class InteressadoService {
     
     @Autowired
-    private ProcessoCPOCPPRepository processoCPOCPPRepository; 
-    
-    @Autowired
-    private InteressadoService interessadoService;
+    private InteressadoRepository interessadoRepository; 
     
     
-    public ProcessoCPOCPPService() {
+    public InteressadoService() {
         super();
     }  
         
-    public Iterable<ProcessoCPOCPP> findAll() {
-        return this.processoCPOCPPRepository.findAll();
+    public Iterable<Interessado> findAll() {
+        return this.interessadoRepository.findAll();
     }
 
-    public void addOrUpdate(final ProcessoCPOCPP processoCPOCPP) {
-   /* 	for(Interessado interessado:processoCPOCPP.getInteressados())
-    	{
-    		Interessado _interessado = this.interessadoService.findByReInteressado(interessado.getReInteressado());
-    		if(_interessado == null)
-    		{
-    			this.interessadoService.addOrUpdate(interessado);
-    		}
-    	}
-    */
-        this.processoCPOCPPRepository.save(processoCPOCPP);
+    public Interessado findByReInteressado(Long reInteressado)
+    {
+    	return this.interessadoRepository.findByReInteressado(reInteressado);
+    }
+    public void addOrUpdate(final Interessado interessado) {    	
+        this.interessadoRepository.save(interessado);
     }
     
     public void remove(final Long id){
-    	this.processoCPOCPPRepository.delete(id);
+    	this.interessadoRepository.delete(id);
     }
     
 }

@@ -2,6 +2,8 @@ package br.gov.sp.policiamilitar.cpocpp.business.entities;
 
 import java.io.Serializable;
 import javax.persistence.*;
+
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -24,7 +26,17 @@ public class ProcessoCPOCPP implements Serializable {
 	
 	private String sinteseFatoGerador;
 
-	@ManyToMany(mappedBy = "processosCPOCPP")
+	@ManyToMany(cascade=CascadeType.ALL)
+	@JoinTable(
+		name="processoCPOCPP_interessado"
+		, joinColumns={
+			@JoinColumn(name="idSECCOM")
+			}
+		, inverseJoinColumns={
+			@JoinColumn(name="reInteressado")
+			}
+		)
+	
 	private List<Interessado> interessados;
 	
 	@ManyToMany(mappedBy = "processosCPOCPP")
@@ -40,7 +52,6 @@ public class ProcessoCPOCPP implements Serializable {
 	
 	public ProcessoCPOCPP() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	
@@ -94,6 +105,10 @@ public class ProcessoCPOCPP implements Serializable {
 	}
 
 	public List<Interessado> getInteressados() {
+		if(this.interessados == null)
+		{
+			this.interessados = new ArrayList<Interessado>();
+		}
 		return interessados;
 	}
 
@@ -102,6 +117,10 @@ public class ProcessoCPOCPP implements Serializable {
 	}
 
 	public List<ProcessoRelacionado> getProcessosRelacionados() {
+		if(this.processosRelacionados == null)
+		{
+			this.processosRelacionados = new ArrayList<ProcessoRelacionado>();
+		}		
 		return processosRelacionados;
 	}
 
