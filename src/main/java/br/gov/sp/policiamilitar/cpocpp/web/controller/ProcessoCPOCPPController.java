@@ -13,6 +13,7 @@ import br.gov.sp.policiamilitar.cpocpp.business.entities.ProcessoCPOCPP;
 import br.gov.sp.policiamilitar.cpocpp.business.entities.Row;
 import br.gov.sp.policiamilitar.cpocpp.business.entities.SeedStarter;
 import br.gov.sp.policiamilitar.cpocpp.business.entities.Assunto;
+import br.gov.sp.policiamilitar.cpocpp.business.entities.DocumentoRelacionado;
 import br.gov.sp.policiamilitar.cpocpp.business.entities.Interessado;
 import br.gov.sp.policiamilitar.cpocpp.business.entities.Status;
 import br.gov.sp.policiamilitar.cpocpp.business.services.AssuntoService;
@@ -78,6 +79,21 @@ public class ProcessoCPOCPPController {
 		processoCPOCPP.getInteressados().remove(idInteressado.intValue());
 		return "processoCPOCPP/processoCPOCPP";
 	}
+	
+	
+	@RequestMapping(value = "/processoCPOCPP", params = { "addDocumentoRelacionado" })
+	public String addDocumentoRelacionado(final ProcessoCPOCPP processoCPOCPP, final BindingResult bindingResult) {
+		processoCPOCPP.getDocumentosRelacionados().add(new DocumentoRelacionado());
+		return "processoCPOCPP/processoCPOCPP";
+	}
+
+	@RequestMapping(value = "/processoCPOCPP", params = { "removeDocumentoRelacionado" })
+	public String removeDocumentoRelacionado(final ProcessoCPOCPP processoCPOCPP, final BindingResult bindingResult,
+			@RequestParam(value = "removeDocumentoRelacionado", required = false) Integer idDocumentoRelacionado) {
+		processoCPOCPP.getDocumentosRelacionados().remove(idDocumentoRelacionado.intValue());
+		return "processoCPOCPP/processoCPOCPP";
+	}
+	
 
 	@RequestMapping(value = "/processoCPOCPP/remover/{id}")
 	public String saveProcessoCPOCPP(@PathVariable Long id) {

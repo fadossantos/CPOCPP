@@ -49,6 +49,11 @@ function menuStatusOnClick() {
 	executaAjaxGet('/status', 'page-wrapper', '', '');
 }
 
+function menuTipoDocumentoOnClick() {
+	executaAjaxGet('/tipoDocumento', 'page-wrapper', '', '');
+}
+
+
 function menuNovoProcessoOnClick() {
 	executaAjaxGet('/processoCPOCPP', 'page-wrapper', '', previnePadrao());
 }

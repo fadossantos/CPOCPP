@@ -6,8 +6,6 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.NamedQuery;
 
@@ -21,7 +19,10 @@ public class Interessado implements Serializable{
 
 	private String nomeInteressado;
 
-	@ManyToMany(mappedBy = "interessados", cascade=CascadeType.ALL)
+	@ManyToMany(mappedBy = "interessados", cascade=  {CascadeType.DETACH,
+            CascadeType.MERGE,
+            CascadeType.REFRESH,
+            CascadeType.PERSIST})
 	private List<ProcessoCPOCPP> processosCPOCPP;
 
 	public Interessado() {

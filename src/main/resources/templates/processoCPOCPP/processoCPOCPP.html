@@ -16,7 +16,7 @@
 								<th th:text="#{processoCPOCPP.sinteseFatoGerador}">sintese
 									fato gerador</th>
 								<th th:text="#{processoCPOCPP.observacoes}">observacoes</th>
-								<th th:text="#{processoCPOCPP.processosRelacionados}">processos
+								<th th:text="#{processoCPOCPP.documentosRelacionados}">processos
 									realcionados</th>
 							</tr>
 						</thead>
@@ -44,10 +44,10 @@
 								<td><table>
 										<tbody>
 											<tr
-												th:each="processoRelacionado,processoRelacionadoStat : ${pr.processosRelacionados}">
-												<td th:text="${processoRelacionadoStat.count}">1</td>
-												<td th:text="${processoRelacionado.idProcessoRelacionado}">10</td>
-												<td th:text="${processoRelacionado.descProcessoRelacionado}">sindicancia
+												th:each="documentoRelacionado, documentoRelacionadoStat : ${pr.documentosRelacionados}">
+												<td th:text="${documentoRelacionadoStat.count}">1</td>
+												<td th:text="${documentoRelacionado,.idDocumentoRelacionado}">10</td>
+												<td th:text="${documentoRelacionado,.descDocumentoRelacionado}">sindicancia
 													n 10bpmi</td>
 											</tr>
 										</tbody>
@@ -104,14 +104,14 @@
 
 					<div class="form-group">
 						<label for="observacoes" th:text="#{processoCPOCPP.observacoes}">observacoes
-						</label> <input class="form-control" type="text" th:field="*{observacoes}"
+						</label> <textarea class="form-control" type="text" th:field="*{observacoes}"
 							th:errorclass="fieldError" />
 					</div>
 
 					<div class="form-group">
 						<label for="sinteseFatoGerador"
 							th:text="#{processoCPOCPP.sinteseFatoGerador}">sinteseFatoGerador
-						</label> <input class="form-control" type="text"
+						</label> <textarea class="form-control" type="text"
 							th:field="*{sinteseFatoGerador}" th:errorclass="fieldError" />
 					</div>
 					<div class="form-group">
@@ -150,6 +150,49 @@
 							</tbody>
 						</table>
 					</div>
+
+
+
+					<div class="form-group">
+						<button class="btn btn-default" type="submit" name="addInteressado"
+							onclick="formSubmitClick(this)" th:text="#{interessado.add}">Add
+							Interessado</button>
+					</div>
+
+					<div class="form-group"
+						th:unless="${#lists.isEmpty(processoCPOCPP.documentosRelacionados)}">
+						<label th:text="#{processoCPOCPP.documentosRelacionados}">interessados</label>
+						<table>
+							<thead>
+								<tr>
+									<th th:text="#{interessado.reInteressado}">RE</th>
+									<th th:text="#{interessado.nomeInteressado}">Variety</th>
+
+
+								</tr>
+							</thead>
+							<tbody>
+								<tr th:each="interessado,interessadoStat : *{interessados}">
+									<td><input class="form-control" type="text"
+										th:field="*{interessados[__${interessadoStat.index}__].reInteressado}"
+										th:errorclass="fieldError" /></td>
+									<td><input class="form-control" type="text"
+										th:field="*{interessados[__${interessadoStat.index}__].nomeInteressado}"
+										th:errorclass="fieldError" /></td>
+									<td>
+										<button class="btn btn-default" type="submit" name="removeInteressado"
+											th:value="${interessadoStat.index}"
+											onclick="formSubmitClick(this)"
+											th:text="#{interessado.remove}">Remove Interessado</button>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+
+
+
+
 
 					<div class="submit form-group">
 						<button class="btn btn-default" type="submit" name="save" onclick="formSubmitClick(this)"

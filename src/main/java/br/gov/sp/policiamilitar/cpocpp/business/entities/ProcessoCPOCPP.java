@@ -26,7 +26,10 @@ public class ProcessoCPOCPP implements Serializable {
 	
 	private String sinteseFatoGerador;
 
-	@ManyToMany(cascade=CascadeType.ALL)
+	@ManyToMany(cascade=  {CascadeType.DETACH,
+            CascadeType.MERGE,
+            CascadeType.REFRESH,
+            CascadeType.PERSIST})
 	@JoinTable(
 		name="processoCPOCPP_interessado"
 		, joinColumns={
@@ -35,12 +38,11 @@ public class ProcessoCPOCPP implements Serializable {
 		, inverseJoinColumns={
 			@JoinColumn(name="reInteressado")
 			}
-		)
-	
+		)	
 	private List<Interessado> interessados;
 	
-	@ManyToMany(mappedBy = "processosCPOCPP")
-	private List<ProcessoRelacionado> processosRelacionados;
+	@OneToMany(cascade=  {CascadeType.ALL})	
+	private List<DocumentoRelacionado> documentosRelacionados;
 	
 	@ManyToOne
 	@JoinColumn(name = "idStatus")
@@ -57,7 +59,7 @@ public class ProcessoCPOCPP implements Serializable {
 	
 
 	public ProcessoCPOCPP(long idSecCom, Date dtEntradaProcessoCPOCPP, String observacoes, String sinteseFatoGerador,
-			List<Interessado> interessados, List<ProcessoRelacionado> processosRelacionados, Status status,
+			List<Interessado> interessados, List<DocumentoRelacionado> documentosRelacionados, Status status,
 			Assunto assunto) {
 		super();
 		this.idSecCom = idSecCom;
@@ -65,7 +67,7 @@ public class ProcessoCPOCPP implements Serializable {
 		this.observacoes = observacoes;
 		this.sinteseFatoGerador = sinteseFatoGerador;
 		this.interessados = interessados;
-		this.processosRelacionados = processosRelacionados;
+		this.documentosRelacionados = documentosRelacionados;
 		this.status = status;
 		this.assunto = assunto;
 	}
@@ -116,16 +118,16 @@ public class ProcessoCPOCPP implements Serializable {
 		this.interessados = interessados;
 	}
 
-	public List<ProcessoRelacionado> getProcessosRelacionados() {
-		if(this.processosRelacionados == null)
+	public List<DocumentoRelacionado> getDocumentosRelacionados() {
+		if(this.documentosRelacionados == null)
 		{
-			this.processosRelacionados = new ArrayList<ProcessoRelacionado>();
+			this.documentosRelacionados = new ArrayList<DocumentoRelacionado>();
 		}		
-		return processosRelacionados;
+		return documentosRelacionados;
 	}
 
-	public void setProcessosRelacionados(List<ProcessoRelacionado> processosRelacionados) {
-		this.processosRelacionados = processosRelacionados;
+	public void setDocumentosRelacionados(List<DocumentoRelacionado> documentosRelacionados) {
+		this.documentosRelacionados = documentosRelacionados;
 	}
 
 	public Status getStatus() {
