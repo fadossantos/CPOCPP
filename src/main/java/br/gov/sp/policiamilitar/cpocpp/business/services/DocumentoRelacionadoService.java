@@ -22,34 +22,35 @@ package br.gov.sp.policiamilitar.cpocpp.business.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import br.gov.sp.policiamilitar.cpocpp.business.entities.Interessado;
-import br.gov.sp.policiamilitar.cpocpp.business.entities.repositories.InteressadoRepository;
+import br.gov.sp.policiamilitar.cpocpp.business.entities.DocumentoRelacionado;
+import br.gov.sp.policiamilitar.cpocpp.business.entities.repositories.DocumentoRelacionadoRepository;
 
 @Service
-public class InteressadoService {
+public class DocumentoRelacionadoService {
     
     @Autowired
-    private InteressadoRepository interessadoRepository; 
+    private DocumentoRelacionadoRepository documentoRelacionadoRepository; 
     
     
-    public InteressadoService() {
+    public DocumentoRelacionadoService() {
         super();
     }  
         
-    public Iterable<Interessado> findAll() {
-        return this.interessadoRepository.findAll();
+    public Iterable<DocumentoRelacionado> findAll() {
+        return this.documentoRelacionadoRepository.findAll();
     }
 
-    public Interessado findByReInteressado(Long reInteressado)
+    public DocumentoRelacionado findByOne(Long id)
     {
-    	return this.interessadoRepository.findByReInteressado(reInteressado);
+    	return this.documentoRelacionadoRepository.findOne(id);
     }
-    public void addOrUpdate(final Interessado interessado) {    	
-        this.interessadoRepository.save(interessado);
+    
+    public void addOrUpdate(final DocumentoRelacionado documentoRelacionado) {    	
+        this.documentoRelacionadoRepository.save(documentoRelacionado);
     }
     
     public void remove(final Long id){
-    	this.interessadoRepository.delete(id);
+    	this.documentoRelacionadoRepository.delete(id);
     }
     
 }

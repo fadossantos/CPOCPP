@@ -41,7 +41,8 @@ public class ProcessoCPOCPP implements Serializable {
 		)	
 	private List<Interessado> interessados;
 	
-	@OneToMany(cascade=  {CascadeType.ALL})	
+	@OneToMany(cascade={CascadeType.ALL})	
+	@JoinColumn(name = "idSecCom")
 	private List<DocumentoRelacionado> documentosRelacionados;
 	
 	@ManyToOne

@@ -1,9 +1,5 @@
 package br.gov.sp.policiamilitar.cpocpp.web.controller;
 
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -11,17 +7,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-
 import br.gov.sp.policiamilitar.cpocpp.business.entities.Status;
-import br.gov.sp.policiamilitar.cpocpp.business.entities.Feature;
-import br.gov.sp.policiamilitar.cpocpp.business.entities.Row;
-import br.gov.sp.policiamilitar.cpocpp.business.entities.SeedStarter;
-import br.gov.sp.policiamilitar.cpocpp.business.entities.Type;
-import br.gov.sp.policiamilitar.cpocpp.business.entities.Variety;
 import br.gov.sp.policiamilitar.cpocpp.business.services.StatusService;
-import br.gov.sp.policiamilitar.cpocpp.business.services.SeedStarterService;
-import br.gov.sp.policiamilitar.cpocpp.business.services.VarietyService;
 
 
 @Controller

@@ -22,7 +22,6 @@ package br.gov.sp.policiamilitar.cpocpp.business.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import br.gov.sp.policiamilitar.cpocpp.business.entities.Interessado;
 import br.gov.sp.policiamilitar.cpocpp.business.entities.ProcessoCPOCPP;
 import br.gov.sp.policiamilitar.cpocpp.business.entities.repositories.ProcessoCPOCPPRepository;
 
@@ -31,11 +30,7 @@ public class ProcessoCPOCPPService {
     
     @Autowired
     private ProcessoCPOCPPRepository processoCPOCPPRepository; 
-    
-    @Autowired
-    private InteressadoService interessadoService;
-    
-    
+  
     public ProcessoCPOCPPService() {
         super();
     }  
@@ -43,18 +38,33 @@ public class ProcessoCPOCPPService {
     public Iterable<ProcessoCPOCPP> findAll() {
         return this.processoCPOCPPRepository.findAll();
     }
+    
+    public Iterable<ProcessoCPOCPP> findByNomeInteressado(String nomeInteressado) {
+        return this.processoCPOCPPRepository.findByNomeInteressado(nomeInteressado);
+    }
+    
+    public Iterable<ProcessoCPOCPP> findByReInteressado(Long ReInteressado) {
+        return this.processoCPOCPPRepository.findByReInteressado(ReInteressado);
+    }
+    
+    
+    public Iterable<ProcessoCPOCPP> findByIdSecCom(Long idSecCom) {
+        return this.processoCPOCPPRepository.findByIdSecCom(idSecCom);
+    }
+    
+    
+    public Iterable<ProcessoCPOCPP> findByIdStatus(Long idStatus) {
+        return this.processoCPOCPPRepository.findByIdStatus(idStatus);
+    }
+    
+    
+    public ProcessoCPOCPP findOne(Long id)
+    {
+    	return this.processoCPOCPPRepository.findOne(id);
+    }
 
     public void addOrUpdate(final ProcessoCPOCPP processoCPOCPP) {
-   /* 	for(Interessado interessado:processoCPOCPP.getInteressados())
-    	{
-    		Interessado _interessado = this.interessadoService.findByReInteressado(interessado.getReInteressado());
-    		if(_interessado == null)
-    		{
-    			this.interessadoService.addOrUpdate(interessado);
-    		}
-    	}
-    */
-        this.processoCPOCPPRepository.save(processoCPOCPP);
+          this.processoCPOCPPRepository.save(processoCPOCPP);
     }
     
     public void remove(final Long id){
