@@ -1,8 +1,5 @@
 package br.gov.sp.policiamilitar.cpocpp.business.entities;
 
-import java.io.IOException;
-
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -18,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 @NamedQuery(name="DocumentoRelacionado.findAll", query="SELECT a FROM DocumentoRelacionado a")
 public class DocumentoRelacionado {
 	
+
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private long idDocumentoRelacionado;
@@ -28,25 +26,27 @@ public class DocumentoRelacionado {
 	
 	private String nomeDocumentoRelacionado;
 	
-	@Column(length=100000000)
-	private byte[] arrayBytes;
+	
+	
+	private String caminhoArquivoSalvo;
 	
 	@Transient
-	private MultipartFile file;
+	private MultipartFile file;	
 	
+	public String getCaminhoArquivoSalvo() {
+		return caminhoArquivoSalvo;
+	}
+
+	public void setCaminhoArquivoSalvo(String caminhoArquivoSalvo) {
+		this.caminhoArquivoSalvo = caminhoArquivoSalvo;
+	}
+
 	public MultipartFile getFile() {
-			
 		return file;
 	}
 	
 	public void setFile(MultipartFile file) {
-		this.file = file;
-		try {
-			this.arrayBytes = file.getBytes();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		this.file = file;		
 	}
 
 	@ManyToOne
@@ -57,14 +57,13 @@ public class DocumentoRelacionado {
 	private ProcessoCPOCPP processoCPOCPP;	
 
 	public DocumentoRelacionado(long idDocumentoRelacionado, String protocoloPM, String descDocumentoRelacionado,
-			String nomeDocumentoRelacionado, byte[] arrayBytes, TipoDocumento tipoDocumento,
+			String nomeDocumentoRelacionado, TipoDocumento tipoDocumento,
 			ProcessoCPOCPP processoCPOCPP) {
 		super();
 		this.idDocumentoRelacionado = idDocumentoRelacionado;
 		this.protocoloPM = protocoloPM;
 		this.descDocumentoRelacionado = descDocumentoRelacionado;
 		this.nomeDocumentoRelacionado = nomeDocumentoRelacionado;
-		this.arrayBytes = arrayBytes;
 		this.tipoDocumento = tipoDocumento;
 		this.processoCPOCPP = processoCPOCPP;
 	}
@@ -74,8 +73,6 @@ public class DocumentoRelacionado {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-
-
 
 	public long getIdDocumentoRelacionado() {
 		return idDocumentoRelacionado;
@@ -105,16 +102,8 @@ public class DocumentoRelacionado {
 		return nomeDocumentoRelacionado;
 	}
 
-	public void setNomeDocumentoRelacionado(String nomeDocumentoRelacionado) {
+	public void setNomeDocumentoRelacionado(String nomeDocumentoRelacionado) {		
 		this.nomeDocumentoRelacionado = nomeDocumentoRelacionado;
-	}
-
-	public byte[] getArrayBytes() {
-		return arrayBytes;
-	}
-
-	public void setArrayBytes(byte[] arrayBytes) {
-		this.arrayBytes = arrayBytes;
 	}
 
 	public TipoDocumento getTipoDocumento() {
@@ -132,9 +121,5 @@ public class DocumentoRelacionado {
 	public void setProcessoCPOCPP(ProcessoCPOCPP processoCPOCPP) {
 		this.processoCPOCPP = processoCPOCPP;
 	}
-	
-	
-
-
 
 }

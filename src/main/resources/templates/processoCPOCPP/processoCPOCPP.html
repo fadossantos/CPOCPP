@@ -16,8 +16,7 @@
 								<th th:text="#{processoCPOCPP.sinteseFatoGerador}">sintese
 									fato gerador</th>
 								<th th:text="#{processoCPOCPP.observacoes}">observacoes</th>
-								<th th:text="#{processoCPOCPP.documentosRelacionados}">documentos
-									realacionados</th>
+								<th th:text="#{processoCPOCPP.historicos}">historicos</th>
 								<th sec:authorize="hasRole('ROLE_ADMIN')"
 									th:text="#{processoCPOCPP.removeProcesso}">documentos
 									realacionados</th>
@@ -47,14 +46,13 @@
 								<td><table class="table table-striped table-bordered table-hover">
 										<tbody>
 											<tr
-												th:each="documentoRelacionado, documentoRelacionadoStat : ${pr.documentosRelacionados}">
-												<td th:text="${documentoRelacionadoStat.count}">1</td>
-												<td th:text="${documentoRelacionado.idDocumentoRelacionado}">10</td>
+												th:each="historico, historicoStat : ${pr.historicos}">
+												<td th:text="${historicoStat.count}">1</td>
+												<td th:text="${historico.dataGravacao}">10</td>
 												<td
-													th:text="${documentoRelacionado.nomeDocumentoRelacionado}">sindicancia
-													n 10bpmi</td>
-												<td th:text="${documentoRelacionado.protocoloPM}">protoPM</td>
-												<td><a th:href="@{|/downloadDocumentoRelacionado/${documentoRelacionado.idDocumentoRelacionado}|}"><span
+													th:text="${historico.descHistorico}">descHistorico</td>
+												<td th:text="${historico.documentoRelacionado.nomeDocumentoRelacionado}?${historico.documentoRelacionado.nomeDocumentoRelacionado}">nomeDocumentoRelacionado</td>
+												<td th:if="${historico.documentoRelacionado!=null}" ><a th:href="@{|/downloadDocumentoRelacionado/${historico.documentoRelacionado.idDocumentoRelacionado}|}" target="_blank"><span
 										class="glyphicon glyphicon-download-alt"></span></a></td>
 											</tr>
 										</tbody>
@@ -165,59 +163,65 @@
 						</div>
 					</div>
 
-					<div id="AddDocumentoRelacionado">
+				 <div id="AddHistorico">
 						<div class="form-group">
 							<button class="btn btn-default" type="submit"
-								name="addDocumentoRelacionado" onclick="formSubmitClick(this,'page-wrapper')"
-								th:text="#{documentoRelacionado.add}">Add DocRel</button>
+								name="addHistorico" onclick="formSubmitClick(this,'page-wrapper')"
+								th:text="#{historico.add}">Add DocRel</button>
 						</div>
 
 						<div class="form-group"
-							th:unless="${#lists.isEmpty(processoCPOCPP.documentosRelacionados)}">
-							<label th:text="#{processoCPOCPP.documentosRelacionados}">Doc
-								Rels</label>
+							th:unless="${#lists.isEmpty(processoCPOCPP.historicos)}">
+							<label th:text="#{processoCPOCPP.historicos}">Historicos</label>
 							<table>
 								<thead>
 									<tr>
-										<th th:text="#{documentoRelacionado.protocoloPM}">ProtoPM</th>
-										<th th:text="#{documentoRelacionado.nomeDocumentoRelacionado}">NumeroDoc</th>
-										<th th:text="#{documentoRelacionado.descDocumentoRelacionado}">DescDoc</th>
+										<th th:text="#{historico.dataGravacao}">Data</th>
+										<th th:text="#{historico.descHistorico}">descHistorico</th>
+										<th th:text="#{documentoRelacionado.protocoloPM}">protopmc</th>
+										<th th:text="#{documentoRelacionado.nomeDocumentoRelacionado}">nomeDoc</th>
+										<th th:text="#{documentoRelacionado.descDocumentoRelacionado}">nomeDoc</th>
 										<th th:text="#{documentoRelacionado.tipoDocumento}">tipoDoc</th>
 										<th th:text="#{documentoRelacionado.arrayBytes}">Arquivo</th>
-
 									</tr>
 								</thead>
 								<tbody>
-									<tr th:each="doc,docStat : *{documentosRelacionados}">
+									<tr th:each=" historico, historicoStat : *{historicos}">
 										<td><input class="form-control" type="text"
-											th:field="*{documentosRelacionados[__${docStat.index}__].protocoloPM}"
+											th:field="*{historicos[__${historicoStat.index}__].dataGravacao}"
 											th:errorclass="fieldError" /></td>
 										<td><input class="form-control" type="text"
-											th:field="*{documentosRelacionados[__${docStat.index}__].nomeDocumentoRelacionado}"
+											th:field="*{historicos[__${historicoStat.index}__].descHistorico}"
 											th:errorclass="fieldError" /></td>
 										<td><input class="form-control" type="text"
-											th:field="*{documentosRelacionados[__${docStat.index}__].descDocumentoRelacionado}"
+											th:field="*{historicos[__${historicoStat.index}__].documentoRelacionado.protocoloPM}"
+											th:errorclass="fieldError" /></td>
+										<td><input class="form-control" type="text"
+											th:field="*{historicos[__${historicoStat.index}__].documentoRelacionado.nomeDocumentoRelacionado}"
+											th:errorclass="fieldError" /></td>											
+										<td><input class="form-control" type="text"
+											th:field="*{historicos[__${historicoStat.index}__].documentoRelacionado.descDocumentoRelacionado}"
 											th:errorclass="fieldError" /></td>
 										<td><input class="form-control" type="file" accept=".pdf"
-											th:field="*{documentosRelacionados[__${docStat.index}__].file}"
+											th:field="*{historicos[__${historicoStat.index}__].documentoRelacionado.file}"
 											th:errorclass="fieldError" /></td>
-										<td><select class="form-control" th:field="*{documentosRelacionados[__${docStat.index}__].tipoDocumento}">
+										<td><select class="form-control" th:field="*{historicos[__${historicoStat.index}__].documentoRelacionado.tipoDocumento}">
 												<option th:each="tipoDocumento : ${allTipoDocumentos}"
 													th:value="${tipoDocumento.idTipoDocumento}"
 													th:text="${tipoDocumento.descTipoDocumento}">tipdoc</option>
 										</select></td>
+										 
 										<td>
 											<button class="btn btn-default" type="submit"
-												name="removeDocumentoRelacionado"
-												th:value="${docStat.index}" onclick="formSubmitClick(this,'page-wrapper')"
-												th:text="#{documentoRelacionado.remove}">Remove Doc</button>
+												name="removeHistorico"
+												th:value="${historicoStat.index}" onclick="formSubmitClick(this,'page-wrapper')"
+												th:text="#{historico.remove}">Remove Doc</button>
 										</td>
 									</tr>
-								</tbody>
+																	</tbody>
 							</table>
 						</div>
 					</div>
-
 
 
 

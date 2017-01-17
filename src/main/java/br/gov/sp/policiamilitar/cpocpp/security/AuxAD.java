@@ -19,9 +19,9 @@ import br.gov.sp.policiamilitar.cpocpp.business.entities.RetornoAD;
 
 public class AuxAD {
 
-	public static final String ERROCONEXAO = "Erro na comunicação com o AD.";
+	public static final String ERROCONEXAO = "Erro na comunicaÃ§Ã£o com o AD.";
 	public static final String SUCESSO = "Sucesso";
-	public static final String ERROAUTENTICACAO = "Erro na autenticação, usuario ou senha invalidos.";
+	public static final String ERROAUTENTICACAO = "Erro na autenticaÃ§Ã£o, usuario ou senha invalidos.";
 
 	public RetornoAD validaUsuarioAD(String ipDominio, String usuario, String senha, String dominio) {
 		LdapContext ctx = null;

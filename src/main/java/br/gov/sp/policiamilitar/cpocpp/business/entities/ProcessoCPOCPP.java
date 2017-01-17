@@ -43,7 +43,7 @@ public class ProcessoCPOCPP implements Serializable {
 	
 	@OneToMany(cascade={CascadeType.ALL})	
 	@JoinColumn(name = "idSecCom")
-	private List<DocumentoRelacionado> documentosRelacionados;
+	private List<Historico> historicos;
 	
 	@ManyToOne
 	@JoinColumn(name = "idStatus")
@@ -60,7 +60,7 @@ public class ProcessoCPOCPP implements Serializable {
 	
 
 	public ProcessoCPOCPP(long idSecCom, Date dtEntradaProcessoCPOCPP, String observacoes, String sinteseFatoGerador,
-			List<Interessado> interessados, List<DocumentoRelacionado> documentosRelacionados, Status status,
+			List<Interessado> interessados, List<Historico> historicos, Status status,
 			Assunto assunto) {
 		super();
 		this.idSecCom = idSecCom;
@@ -68,7 +68,7 @@ public class ProcessoCPOCPP implements Serializable {
 		this.observacoes = observacoes;
 		this.sinteseFatoGerador = sinteseFatoGerador;
 		this.interessados = interessados;
-		this.documentosRelacionados = documentosRelacionados;
+		this.historicos = historicos;
 		this.status = status;
 		this.assunto = assunto;
 	}
@@ -119,17 +119,22 @@ public class ProcessoCPOCPP implements Serializable {
 		this.interessados = interessados;
 	}
 
-	public List<DocumentoRelacionado> getDocumentosRelacionados() {
-		if(this.documentosRelacionados == null)
+	
+	public List<Historico> getHistoricos() {
+		if (this.historicos == null)
 		{
-			this.documentosRelacionados = new ArrayList<DocumentoRelacionado>();
-		}		
-		return documentosRelacionados;
+			this.historicos = new ArrayList<Historico>();
+		}
+		return historicos;
 	}
 
-	public void setDocumentosRelacionados(List<DocumentoRelacionado> documentosRelacionados) {
-		this.documentosRelacionados = documentosRelacionados;
+
+
+	public void setHistoricos(List<Historico> historicos) {
+		this.historicos = historicos;
 	}
+
+
 
 	public Status getStatus() {
 		return status;

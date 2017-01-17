@@ -1,5 +1,11 @@
 package br.gov.sp.policiamilitar.cpocpp.web.controller;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -13,7 +19,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import br.gov.sp.policiamilitar.cpocpp.business.entities.ProcessoCPOCPP;
 import br.gov.sp.policiamilitar.cpocpp.business.entities.Assunto;
-import br.gov.sp.policiamilitar.cpocpp.business.entities.DocumentoRelacionado;
+import br.gov.sp.policiamilitar.cpocpp.business.entities.Historico;
 import br.gov.sp.policiamilitar.cpocpp.business.entities.Interessado;
 import br.gov.sp.policiamilitar.cpocpp.business.entities.Status;
 import br.gov.sp.policiamilitar.cpocpp.business.entities.TipoDocumento;
@@ -21,6 +27,7 @@ import br.gov.sp.policiamilitar.cpocpp.business.services.AssuntoService;
 import br.gov.sp.policiamilitar.cpocpp.business.services.ProcessoCPOCPPService;
 import br.gov.sp.policiamilitar.cpocpp.business.services.StatusService;
 import br.gov.sp.policiamilitar.cpocpp.business.services.TipoDocumentoService;
+import br.gov.sp.policiamilitar.cpocpp.filepersistence.FilePersistence;
 
 @Controller
 public class ProcessoCPOCPPController {
@@ -33,9 +40,12 @@ public class ProcessoCPOCPPController {
 
 	@Autowired
 	private StatusService statusService;
-	
+
 	@Autowired
 	private TipoDocumentoService tipoDocumentoService;
+
+	@Autowired
+	private FilePersistence filePersistence;
 
 	public ProcessoCPOCPPController() {
 		super();
@@ -55,7 +65,7 @@ public class ProcessoCPOCPPController {
 	public Iterable<Assunto> populateAssuntos() {
 		return this.assuntoService.findAll();
 	}
-	
+
 	@ModelAttribute("allTipoDocumentos")
 	public Iterable<TipoDocumento> populateTipoDocumentos() {
 		return this.tipoDocumentoService.findAll();
@@ -66,21 +76,31 @@ public class ProcessoCPOCPPController {
 		return "processoCPOCPP/processoCPOCPP";
 	}
 
-	
-//novo processo	
-	
-	
+	// novo processo
+
 	@RequestMapping(value = "/processoCPOCPP", params = { "save" })
 	public String saveProcessoCPOCPP(final ProcessoCPOCPP processoCPOCPP, final BindingResult bindingResult,
-			final ModelMap model) {
+			final ModelMap model) throws IOException {
 		ProcessoCPOCPP pr = this.processoCPOCPPService.findOne(processoCPOCPP.getIdSecCom());
-		if (pr != null)
-		{
-			bindingResult.addError(new ObjectError("idSecCom", "Processo de numero " + processoCPOCPP.getIdSecCom() + " já existe na base de dados"));
+		if (pr != null) {
+			bindingResult.addError(new ObjectError("idSecCom",
+					"Processo de numero " + processoCPOCPP.getIdSecCom() + " jï¿½ existe na base de dados"));
 		}
 		if (bindingResult.hasErrors()) {
 			return "processoCPOCPP/processoCPOCPP";
-		}		
+		}
+
+		for (Historico dr : processoCPOCPP.getHistoricos()) {
+			if (dr.getDocumentoRelacionado().getFile() != null) {
+				dr.getDocumentoRelacionado()
+						.setCaminhoArquivoSalvo(filePersistence.getCaminhoArquivo() + File.separator
+								+ String.valueOf(processoCPOCPP.getIdSecCom()) + File.separator
+								+ dr.getDocumentoRelacionado().getNomeDocumentoRelacionado());
+				filePersistence.salvaArquivo(dr.getDocumentoRelacionado().getFile(),
+						String.valueOf(processoCPOCPP.getIdSecCom()),
+						dr.getDocumentoRelacionado().getNomeDocumentoRelacionado());
+			}
+		}
 		this.processoCPOCPPService.addOrUpdate(processoCPOCPP);
 		model.clear();
 		return "redirect:/processoCPOCPP";
@@ -98,64 +118,86 @@ public class ProcessoCPOCPPController {
 		processoCPOCPP.getInteressados().remove(idInteressado.intValue());
 		return "processoCPOCPP/processoCPOCPP";
 	}
-	
-	
-	@RequestMapping(value = "/processoCPOCPP", params = { "addDocumentoRelacionado" })
-	public String addDocumentoRelacionado(final ProcessoCPOCPP processoCPOCPP, final BindingResult bindingResult) {
-		processoCPOCPP.getDocumentosRelacionados().add(new DocumentoRelacionado());
+
+	@RequestMapping(value = "/processoCPOCPP", params = { "addHistorico" })
+	public String addHistorico(final ProcessoCPOCPP processoCPOCPP, final BindingResult bindingResult) {
+		
+		processoCPOCPP.getHistoricos().add(new Historico());
 		return "processoCPOCPP/processoCPOCPP";
 	}
 
-	@RequestMapping(value = "/processoCPOCPP", params = { "removeDocumentoRelacionado" })
-	public String removeDocumentoRelacionado(final ProcessoCPOCPP processoCPOCPP, final BindingResult bindingResult,
-			@RequestParam(value = "removeDocumentoRelacionado", required = false) Integer idDocumentoRelacionado) {
-		processoCPOCPP.getDocumentosRelacionados().remove(idDocumentoRelacionado.intValue());
+	@RequestMapping(value = "/processoCPOCPP", params = { "removeHistorico" })
+	public String removeHistorico(final ProcessoCPOCPP processoCPOCPP, final BindingResult bindingResult,
+			@RequestParam(value = "removeHistorico", required = false) Integer idHistorico) {
+		processoCPOCPP.getHistoricos().remove(idHistorico.intValue());
 		return "processoCPOCPP/processoCPOCPP";
 	}
-	
 
 	@RequestMapping(value = "/processoCPOCPP/remover/{id}")
-	public String removeProcessoCPOCPP(@PathVariable Long id) {
+	public String removeProcessoCPOCPP(@PathVariable Long id) throws IOException {
+		ProcessoCPOCPP pr = this.processoCPOCPPService.findOne(id);
+		if (pr != null) {
+			if (pr.getHistoricos() != null) {
+				this.filePersistence.deletaDiretorio(String.valueOf(pr.getIdSecCom()));
+			}
+		}
 		this.processoCPOCPPService.remove(id);
 		return "redirect:/processoCPOCPP";
 	}
-	
-	
-	//Edicao modal
-	
+
+	// Edicao modal
+
 	@RequestMapping(value = "/processoCPOCPP/{origem}/editar/{id}/{parametroPesquisado}")
-	public ModelAndView editaProcessoCPOCPP(@PathVariable Long id, ProcessoCPOCPP pr, @PathVariable String origem, @PathVariable String parametroPesquisado) {
+	public ModelAndView editaProcessoCPOCPP(@PathVariable Long id, ProcessoCPOCPP pr, @PathVariable String origem,
+			@PathVariable String parametroPesquisado) {
 		pr = this.processoCPOCPPService.findOne(id);
-		pr.getDocumentosRelacionados().clear();
+		List<Historico> listDocRel = new ArrayList<Historico>();
+		for (Historico docrel : pr.getHistoricos()) {
+			listDocRel.add(docrel);
+		}
 		ModelAndView mav = new ModelAndView();
 		mav.setViewName("processoCPOCPP/processoCPOCPPEdicao");
+		mav.addObject("listaDocumentos", listDocRel);
+		pr.getHistoricos().clear();
 		mav.addObject("origem", origem);
 		mav.addObject("processoCPOCPP", pr);
 		mav.addObject("parametroPesquisado", parametroPesquisado);
 		return mav;
 	}
-	
+
 	@RequestMapping(value = "/processoCPOCPP/{origem}/{parametroPesquisado}", params = { "save" })
-	public String saveEditedProcessoCPOCPP(@PathVariable String origem, @PathVariable String parametroPesquisado, final ProcessoCPOCPP processoCPOCPP, final BindingResult bindingResult,
-			final ModelMap model) {		
+	public String saveEditedProcessoCPOCPP(@PathVariable String origem, @PathVariable String parametroPesquisado,
+			final ProcessoCPOCPP processoCPOCPP, final BindingResult bindingResult, final ModelMap model)
+			throws IOException {
 		if (bindingResult.hasErrors()) {
-			return "redirect:/processoCPOCPP" + origem + "/" + parametroPesquisado ;
-		}	
+			return "redirect:/processoCPOCPP" + origem + "/" + parametroPesquisado;
+		}
 		ProcessoCPOCPP pr = this.processoCPOCPPService.findOne(processoCPOCPP.getIdSecCom());
-		for(DocumentoRelacionado dr: pr.getDocumentosRelacionados())
-		{
-			processoCPOCPP.getDocumentosRelacionados().add(dr);
+		for (Historico dr : pr.getHistoricos()) {
+			processoCPOCPP.getHistoricos().add(dr);
+		}
+
+		for (Historico dr : processoCPOCPP.getHistoricos()) {
+			if (dr.getDocumentoRelacionado().getFile() != null) {
+				dr.getDocumentoRelacionado()
+						.setCaminhoArquivoSalvo(filePersistence.getCaminhoArquivo() + File.separator
+								+ String.valueOf(processoCPOCPP.getIdSecCom()) + File.separator
+								+ dr.getDocumentoRelacionado().getNomeDocumentoRelacionado());
+				filePersistence.salvaArquivo(dr.getDocumentoRelacionado().getFile(),
+						String.valueOf(processoCPOCPP.getIdSecCom()),
+						dr.getDocumentoRelacionado().getNomeDocumentoRelacionado());
+			}
 		}
 		this.processoCPOCPPService.addOrUpdate(processoCPOCPP);
 		model.clear();
 		return "redirect:/processoCPOCPP" + origem + "/" + parametroPesquisado;
 	}
-	
-	
-	
-	@RequestMapping(value = "/processoCPOCPP/{origem}/{parametroPesquisado}", params = { "addDocumentoRelacionado" })
-	public ModelAndView addEditedDocumentoRelacionado(@PathVariable String origem, @PathVariable String parametroPesquisado, final ProcessoCPOCPP processoCPOCPP, final BindingResult bindingResult) {
-		processoCPOCPP.getDocumentosRelacionados().add(new DocumentoRelacionado());
+
+	@RequestMapping(value = "/processoCPOCPP/{origem}/{parametroPesquisado}", params = { "addHistorico" })
+	public ModelAndView addEditedHistorico(@PathVariable String origem,
+			@PathVariable String parametroPesquisado, final ProcessoCPOCPP processoCPOCPP,
+			final BindingResult bindingResult) {
+		processoCPOCPP.getHistoricos().add(new Historico());
 		ModelAndView mav = new ModelAndView();
 		mav.setViewName("processoCPOCPP/processoCPOCPPEdicao");
 		mav.addObject("origem", origem);
@@ -164,10 +206,12 @@ public class ProcessoCPOCPPController {
 		return mav;
 	}
 
-	@RequestMapping(value = "/processoCPOCPP/{origem}/{parametroPesquisado}", params = { "removeDocumentoRelacionado" })
-	public ModelAndView removeEditedDocumentoRelacionado(@PathVariable String origem, @PathVariable String parametroPesquisado, final ProcessoCPOCPP processoCPOCPP, final BindingResult bindingResult,
-			@RequestParam(value = "removeDocumentoRelacionado", required = false) Integer idDocumentoRelacionado) {
-		processoCPOCPP.getDocumentosRelacionados().remove(idDocumentoRelacionado.intValue());
+	@RequestMapping(value = "/processoCPOCPP/{origem}/{parametroPesquisado}", params = { "removeHistorico" })
+	public ModelAndView removeEditedDocumentoRelacionado(@PathVariable String origem,
+			@PathVariable String parametroPesquisado, final ProcessoCPOCPP processoCPOCPP,
+			final BindingResult bindingResult,
+			@RequestParam(value = "removeHistorico", required = false) Integer idHistorico) {
+		processoCPOCPP.getHistoricos().remove(idHistorico.intValue());
 		ModelAndView mav = new ModelAndView();
 		mav.setViewName("processoCPOCPP/processoCPOCPPEdicao");
 		mav.addObject("origem", origem);
@@ -175,10 +219,10 @@ public class ProcessoCPOCPPController {
 		mav.addObject("parametroPesquisado", parametroPesquisado);
 		return mav;
 	}
-	
-	
+
 	@RequestMapping(value = "/processoCPOCPP/{origem}/{parametroPesquisado}", params = { "addInteressado" })
-	public ModelAndView addEditedInteressado(@PathVariable String origem, @PathVariable String parametroPesquisado, final ProcessoCPOCPP processoCPOCPP, final BindingResult bindingResult) {
+	public ModelAndView addEditedInteressado(@PathVariable String origem, @PathVariable String parametroPesquisado,
+			final ProcessoCPOCPP processoCPOCPP, final BindingResult bindingResult) {
 		processoCPOCPP.getInteressados().add(new Interessado());
 		ModelAndView mav = new ModelAndView();
 		mav.setViewName("processoCPOCPP/processoCPOCPPEdicao");
@@ -189,7 +233,8 @@ public class ProcessoCPOCPPController {
 	}
 
 	@RequestMapping(value = "/processoCPOCPP/{origem}/{parametroPesquisado}", params = { "removeInteressado" })
-	public ModelAndView removeEditedInteressado(@PathVariable String origem, @PathVariable String parametroPesquisado, final ProcessoCPOCPP processoCPOCPP, final BindingResult bindingResult,
+	public ModelAndView removeEditedInteressado(@PathVariable String origem, @PathVariable String parametroPesquisado,
+			final ProcessoCPOCPP processoCPOCPP, final BindingResult bindingResult,
 			@RequestParam(value = "removeInteressado", required = false) Integer idInteressado) {
 		processoCPOCPP.getInteressados().remove(idInteressado.intValue());
 		ModelAndView mav = new ModelAndView();
@@ -200,71 +245,81 @@ public class ProcessoCPOCPPController {
 		return mav;
 	}
 
-	
-	//busca por nome
-	
+	// busca por nome
+
 	@RequestMapping(value = "/processoCPOCPPPorNomeInteressado/remover/{id}/{parametroPesquisado}")
-	public String removeProcessoCPOCPPPorNomeInteressado(@PathVariable Long id, @PathVariable String parametroPesquisado) {
+	public String removeProcessoCPOCPPPorNomeInteressado(@PathVariable Long id,
+			@PathVariable String parametroPesquisado) {
 		this.processoCPOCPPService.remove(id);
-		return "redirect:/processoCPOCPPPorNomeInteressado/" + parametroPesquisado ;
+		return "redirect:/processoCPOCPPPorNomeInteressado/" + parametroPesquisado;
 	}
-	
+
 	@RequestMapping("/processoCPOCPPPorNomeInteressado")
-	public String showProcessoCPOCPPPorNomeInteressado(@RequestParam(value = "nomeInteressado", required = false) String nomeInteressado, final ModelMap model) {
-		model.addAttribute("listaProcessosPorNomeInteressado", this.processoCPOCPPService.findByNomeInteressado(nomeInteressado));
+	public String showProcessoCPOCPPPorNomeInteressado(
+			@RequestParam(value = "nomeInteressado", required = false) String nomeInteressado, final ModelMap model) {
+		model.addAttribute("listaProcessosPorNomeInteressado",
+				this.processoCPOCPPService.findByNomeInteressado(nomeInteressado));
 		model.addAttribute("parametroPesquisado", nomeInteressado);
 		System.out.println(model.toString());
 		return "processoCPOCPP/processoCPOCPPPorNomeInteressado";
 	}
-	
+
 	@RequestMapping("/processoCPOCPPPorNomeInteressado/{parametroPesquisado}")
-	public String showProcessoCPOCPPPorNomeInteressadoGet(@PathVariable String parametroPesquisado, final ModelMap model) {
-		model.addAttribute("listaProcessosPorNomeInteressado", this.processoCPOCPPService.findByNomeInteressado(parametroPesquisado));
+	public String showProcessoCPOCPPPorNomeInteressadoGet(@PathVariable String parametroPesquisado,
+			final ModelMap model) {
+		model.addAttribute("listaProcessosPorNomeInteressado",
+				this.processoCPOCPPService.findByNomeInteressado(parametroPesquisado));
 		model.addAttribute("parametroPesquisado", parametroPesquisado);
 		System.out.println(model.toString());
 		return "processoCPOCPP/processoCPOCPPPorNomeInteressado";
 	}
-	
-	//busca por re
-	
+
+	// busca por re
+
 	@RequestMapping(value = "/processoCPOCPPPorReInteressado/remover/{id}/{parametroPesquisado}")
 	public String removeProcessoCPOCPPPorReInteressado(@PathVariable Long id, @PathVariable Long parametroPesquisado) {
 		this.processoCPOCPPService.remove(id);
-		return "redirect:/processoCPOCPPPorReInteressado/" + parametroPesquisado ;
+		return "redirect:/processoCPOCPPPorReInteressado/" + parametroPesquisado;
 	}
-	
+
 	@RequestMapping("/processoCPOCPPPorReInteressado")
-	public String showProcessoCPOCPPPorReInteressado(@RequestParam(value = "parametroPesquisado", required = false) Long parametroPesquisado, final ModelMap model) {
-		model.addAttribute("listaProcessosPorReInteressado", this.processoCPOCPPService.findByReInteressado(parametroPesquisado));
-		model.addAttribute("parametroPesquisado", parametroPesquisado);
-		System.out.println(model.toString());
-		return "processoCPOCPP/processoCPOCPPPorReInteressado";
-	}
-	
-	@RequestMapping("/processoCPOCPPPorReInteressado/{parametroPesquisado}")
-	public String showProcessoCPOCPPPorReInteressadoGet(@PathVariable Long parametroPesquisado, final ModelMap model) {
-		model.addAttribute("listaProcessosPorReInteressado", this.processoCPOCPPService.findByReInteressado(parametroPesquisado));
+	public String showProcessoCPOCPPPorReInteressado(
+			@RequestParam(value = "parametroPesquisado", required = false) Long parametroPesquisado,
+			final ModelMap model) {
+		model.addAttribute("listaProcessosPorReInteressado",
+				this.processoCPOCPPService.findByReInteressado(parametroPesquisado));
 		model.addAttribute("parametroPesquisado", parametroPesquisado);
 		System.out.println(model.toString());
 		return "processoCPOCPP/processoCPOCPPPorReInteressado";
 	}
 
-	//busca por status
-	
+	@RequestMapping("/processoCPOCPPPorReInteressado/{parametroPesquisado}")
+	public String showProcessoCPOCPPPorReInteressadoGet(@PathVariable Long parametroPesquisado, final ModelMap model) {
+		model.addAttribute("listaProcessosPorReInteressado",
+				this.processoCPOCPPService.findByReInteressado(parametroPesquisado));
+		model.addAttribute("parametroPesquisado", parametroPesquisado);
+		System.out.println(model.toString());
+		return "processoCPOCPP/processoCPOCPPPorReInteressado";
+	}
+
+	// busca por status
+
 	@RequestMapping(value = "/processoCPOCPPPorStatus/remover/{id}/{parametroPesquisado}")
 	public String removeProcessoCPOCPPPorStatus(@PathVariable Long id, @PathVariable Long parametroPesquisado) {
 		this.processoCPOCPPService.remove(id);
-		return "redirect:/processoCPOCPPPorStatus/" + parametroPesquisado ;
+		return "redirect:/processoCPOCPPPorStatus/" + parametroPesquisado;
 	}
-	
+
 	@RequestMapping("/processoCPOCPPPorStatus")
-	public String showProcessoCPOCPPPorStatus(@RequestParam(value = "parametroPesquisado", required = false) Long parametroPesquisado, final ModelMap model) {
+	public String showProcessoCPOCPPPorStatus(
+			@RequestParam(value = "parametroPesquisado", required = false) Long parametroPesquisado,
+			final ModelMap model) {
 		model.addAttribute("listaProcessosPorStatus", this.processoCPOCPPService.findByIdStatus(parametroPesquisado));
 		model.addAttribute("parametroPesquisado", parametroPesquisado);
 		System.out.println(model.toString());
 		return "processoCPOCPP/processoCPOCPPPorStatus";
 	}
-	
+
 	@RequestMapping("/processoCPOCPPPorStatus/{parametroPesquisado}")
 	public String showProcessoCPOCPPPorStatusGet(@PathVariable Long parametroPesquisado, final ModelMap model) {
 		model.addAttribute("listaProcessosPorStatus", this.processoCPOCPPService.findByIdStatus(parametroPesquisado));
@@ -273,24 +328,24 @@ public class ProcessoCPOCPPController {
 		return "processoCPOCPP/processoCPOCPPPorStatus";
 	}
 
-	
-	//busca por IdSecCom
+	// busca por IdSecCom
 
-	
 	@RequestMapping(value = "/processoCPOCPPPorIdSecCom/remover/{id}/{parametroPesquisado}")
 	public String removeProcessoCPOCPPPorIdSecCom(@PathVariable Long id, @PathVariable Long parametroPesquisado) {
 		this.processoCPOCPPService.remove(id);
-		return "redirect:/processoCPOCPPPorIdSecCom/" + parametroPesquisado ;
+		return "redirect:/processoCPOCPPPorIdSecCom/" + parametroPesquisado;
 	}
-	
+
 	@RequestMapping("/processoCPOCPPPorIdSecCom")
-	public String showProcessoCPOCPPPorIdSecCom(@RequestParam(value = "parametroPesquisado", required = false) Long parametroPesquisado, final ModelMap model) {
+	public String showProcessoCPOCPPPorIdSecCom(
+			@RequestParam(value = "parametroPesquisado", required = false) Long parametroPesquisado,
+			final ModelMap model) {
 		model.addAttribute("listaProcessosPorIdSecCom", this.processoCPOCPPService.findByIdSecCom(parametroPesquisado));
 		model.addAttribute("parametroPesquisado", parametroPesquisado);
 		System.out.println(model.toString());
 		return "processoCPOCPP/processoCPOCPPPorIdSecCom";
 	}
-	
+
 	@RequestMapping("/processoCPOCPPPorIdSecCom/{parametroPesquisado}")
 	public String showProcessoCPOCPPPorIdSecComGet(@PathVariable Long parametroPesquisado, final ModelMap model) {
 		model.addAttribute("listaProcessosPorIdSecCom", this.processoCPOCPPService.findByIdSecCom(parametroPesquisado));
@@ -298,6 +353,5 @@ public class ProcessoCPOCPPController {
 		System.out.println(model.toString());
 		return "processoCPOCPP/processoCPOCPPPorIdSecCom";
 	}
-	
-	
+
 }

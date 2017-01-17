@@ -18,6 +18,16 @@ public class Assunto implements Serializable {
 	private long idAssunto;
 	
 	private String descAssunto;
+	
+	private boolean abreOcorrencia;
+
+	public boolean isAbreOcorrencia() {
+		return abreOcorrencia;
+	}
+
+	public void setAbreOcorrencia(boolean abreOcorrencia) {
+		this.abreOcorrencia = abreOcorrencia;
+	}
 
 	public long getIdAssunto() {
 		return idAssunto;

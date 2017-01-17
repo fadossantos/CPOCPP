@@ -10,6 +10,7 @@
 							<tr>
 								<th th:text="#{assunto.idAssunto}">Id</th>
 								<th th:text="#{assunto.descAssunto}">Descrição</th>
+								<th th:text="#{assunto.abreOcorrencia}">Dados Ocorrencia</th>
 								<th>Remover</th>
 							</tr>
 						</thead>
@@ -17,6 +18,7 @@
 							<tr th:each="ass : ${allAssuntos}">
 								<td th:text="${ass.idAssunto}">1</td>
 								<td th:text="${ass.descAssunto}">descAssunto</td>
+								<td th:text="#{|bool.${ass.abreOcorrencia}|}"></td>
 								<td><a href="#"
 									th:onclick="'executaAjaxGet(\'/assunto/remover/'+ ${ass.idAssunto} + '\',\'page-wrapper\',\'\',\'\');'"><span
 										class="glyphicon glyphicon-remove"></span></a></td>
@@ -24,13 +26,18 @@
 							</tr>
 						</tbody>
 					</table>
-				</div><!-- table responsive -->
-			</div><!-- panel body -->
+				</div>
+				<!-- table responsive -->
+			</div>
+			<!-- panel body -->
 
-		</div><!-- Lista Assuntos -->
-		</div><!-- col-lg-6 -->
-		</div><!-- row -->
-		<div class="row">
+		</div>
+		<!-- Lista Assuntos -->
+	</div>
+	<!-- col-lg-6 -->
+</div>
+<!-- row -->
+<div class="row">
 	<div class="col-lg-6">
 		<div>
 			<h2 th:text="#{titulo.novoAssunto}">Add Novo Assunto</h2>
@@ -48,10 +55,17 @@
 						</label> <input class="form-control" type="text" th:field="*{descAssunto}"
 							th:errorclass="fieldError" />
 					</div>
-					
-						<button class="btn btn-default" type="submit" name="save" onclick="formSubmitClick(this,'page-wrapper')"
-							th:text="#{assunto.salvar}">Add Assunto</button>
-					
+					<div class="form-group">
+						<div class="checkbox">
+							<label class="checkbox-inline" th:for="abreOcorrencia"
+								th:text="#{assunto.abreOcorrencia}"> Abre Ocorrencia <input
+								type="checkbox" th:field="*{abreOcorrencia}" /></label>
+						</div>
+					</div>
+					<button class="btn btn-default" type="submit" name="save"
+						onclick="formSubmitClick(this,'page-wrapper')"
+						th:text="#{assunto.salvar}">Add Assunto</button>
+
 				</fieldset>
 			</form>
 		</div>
