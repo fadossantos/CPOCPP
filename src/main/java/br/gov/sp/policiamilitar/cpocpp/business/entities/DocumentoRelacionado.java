@@ -24,9 +24,7 @@ public class DocumentoRelacionado {
 	
 	private String descDocumentoRelacionado;
 	
-	private String nomeDocumentoRelacionado;
-	
-	
+	private String nomeDocumentoRelacionado;	
 	
 	private String caminhoArquivoSalvo;
 	
